@@ -10,6 +10,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SkelbiuAutoTest {
@@ -24,6 +25,31 @@ public class SkelbiuAutoTest {
         _globalDriver = new ChromeDriver(options);
         _globalDriver.manage().window().maximize();
         wait = new WebDriverWait(_globalDriver, Duration.ofSeconds(5));
+    }
+    @Test
+    public void TEST1(){
+        ArrayList<String> links = new ArrayList<>();
+        for (int i = 1; i < 10; i++) {
+            _globalDriver.get("https://www.skelbiu.lt/skelbimai/" + i + "?keywords=kepure+su+snapeliu");
+            _globalDriver.findElement(By.id("onetrust-accept-btn-handler")).click(); //Sutinkame su slapukais
+
+            if(!_globalDriver.getCurrentUrl().equals("https://www.skelbiu.lt/skelbimai/" + i + "?keywords=kepure+su+snapeliu")){
+                break;
+            }
+            //System.out.println(_globalDriver.getCurrentUrl());
+
+            List<WebElement> cards = _globalDriver.findElement(By.className("standard-list-container")).findElements(By.tagName("a"));
+            for (WebElement card : cards) {
+                if(card.getAttribute("href").contains("/skelbimai/") &&
+                    card.findElements(By.className("kainos")).isEmpty()) {
+                    links.add(card.getAttribute("href"));
+                }
+            }
+        }
+        for (String link : links) {
+            _globalDriver.get(link);
+            System.out.println(_globalDriver.findElement(By.className("actions-container")).findElement(By.className("id")).getText());
+        }
     }
     @Test
     public void Test1(){
